@@ -1,0 +1,2817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABS Library Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #0ea5e9;
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
+            --radius: 0.5rem;
+        }
+
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        button, input, select, textarea {
+            font: inherit;
+            outline: none;
+        }
+
+        button {
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .grid-cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        /* Header & Navigation */
+        .header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            font-size: 1.75rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-list {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        /* Sidebar */
+        .layout {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: white;
+            box-shadow: var(--shadow);
+            padding: 2rem 0;
+            height: calc(100vh - 4rem);
+            position: sticky;
+            top: 4rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0 1rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .sidebar-icon {
+            font-size: 1.25rem;
+            width: 1.5rem;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--gray);
+        }
+
+        /* Library Hero Section */
+        .library-hero {
+            position: relative;
+            height: 300px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .library-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            max-width: 600px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            max-width: 500px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+            width: fit-content;
+        }
+
+        .hero-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Dashboard Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-weight: 600;
+            color: var(--gray);
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.books {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+
+        .stat-icon.users {
+            background-color: rgba(14, 165, 233, 0.1);
+            color: var(--secondary);
+        }
+
+        .stat-icon.borrowed {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: var(--accent);
+        }
+
+        .stat-icon.overdue {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-description {
+            color: var(--gray);
+            font-size: 0.875rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            margin-bottom: 2rem;
+        }
+
+        .tab-list {
+            display: flex;
+            border-bottom: 1px solid var(--gray-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-item {
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+        }
+
+        .tab-item:hover {
+            color: var(--primary);
+        }
+
+        .tab-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Table */
+        .table-container {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .table-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius);
+            width: 240px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            width: 280px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+        }
+
+        .table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .table tr {
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .table tr:last-child {
+            border-bottom: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status.available {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status.borrowed {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status.overdue {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            border: 1px solid var(--gray-light);
+            color: var(--dark);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #0d9488;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .btn-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            border-radius: 50%;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .modal-close {
+            font-size: 1.5rem;
+            color: var(--gray);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius);
+            background-color: white;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1rem;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .page-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+        }
+
+        .page-item:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-item.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .page-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: white;
+            padding: 1.5rem 0;
+            border-top: 1px solid var(--gray-light);
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            color: var(--gray);
+            font-size: 0.875rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-link {
+            color: var(--gray);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        /* Main Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Reports Section */
+        .report-card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .report-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .report-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .report-description {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Settings Section */
+        .settings-card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .settings-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            height: 300px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                padding: 1rem 0;
+                display: none;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-list {
+                display: none;
+            }
+
+            .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .search-input {
+                width: 180px;
+            }
+
+            .search-input:focus {
+                width: 220px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header-container {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .table th, .table td {
+                padding: 0.75rem 1rem;
+            }
+
+            .modal {
+                max-width: 90%;
+            }
+
+            .library-hero {
+                height: 250px;
+            }
+
+            .hero-title {
+                font-size: 1.75rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container container">
+            <a href="#" class="logo">
+                <i class="fas fa-book-open logo-icon"></i>
+                <span>ABS Library</span>
+            </a>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a class="nav-link active" data-section="dashboard">Dashboard</a></li>
+                    <li><a class="nav-link" data-section="books">Books</a></li>
+                    <li><a class="nav-link" data-section="members">Members</a></li>
+                    <li><a class="nav-link" data-section="circulation">Circulation</a></li>
+                    <li><a class="nav-link" data-section="reports">Reports</a></li>
+                    <li><a class="nav-link" data-section="settings">Settings</a></li>
+                </ul>
+                <button class="mobile-menu-btn" id="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <ul class="sidebar-menu">
+                <li>
+                    <a class="sidebar-link active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt sidebar-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sidebar-link" data-section="books">
+                        <i class="fas fa-book sidebar-icon"></i>
+                        <span>Books</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sidebar-link" data-section="members">
+                        <i class="fas fa-users sidebar-icon"></i>
+                        <span>Members</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sidebar-link" data-section="circulation">
+                        <i class="fas fa-exchange-alt sidebar-icon"></i>
+                        <span>Circulation</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sidebar-link" data-section="reports">
+                        <i class="fas fa-chart-bar sidebar-icon"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sidebar-link" data-section="settings">
+                        <i class="fas fa-cog sidebar-icon"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section active">
+                    <!-- Page Header -->
+                    <div class="page-header">
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Welcome to ABS Library Management System</p>
+                    </div>
+
+                    <!-- Library Hero Image -->
+                    <div class="library-hero">
+                        <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" alt="Library Interior">
+                        <div class="hero-overlay">
+                            <h2 class="hero-title">Discover a World of Knowledge</h2>
+                            <p class="hero-subtitle">Explore our vast collection of books, journals, and digital resources.</p>
+                            <a href="#" class="hero-btn" id="browse-catalog-btn">
+                                <i class="fas fa-search"></i>
+                                <span>Browse Catalog</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3 class="stat-title">Total Books</h3>
+                                <div class="stat-icon books">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value">1</div>
+                            <div class="stat-description">0 new books this month</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3 class="stat-title">Members</h3>
+                                <div class="stat-icon users">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value">1</div>
+                            <div class="stat-description">0 new members this month</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3 class="stat-title">Borrowed Books</h3>
+                                <div class="stat-icon borrowed">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value">1</div>
+                            <div class="stat-description">1 books borrowed this week</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3 class="stat-title">Overdue Books</h3>
+                                <div class="stat-icon overdue">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value">1</div>
+                            <div class="stat-description">1 new overdue books today</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3 class="table-title">Recent Activity</h3>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Activity</th>
+                                    <th>User</th>
+                                    <th>Book</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>New Book Added</td>
+                                    <td>Admin</td>
+                                    <td>The Midnight Library</td>
+                                    <td>2023-05-18</td>
+                                    <td><span class="status available">Available</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Books Section -->
+                <section id="books-section" class="content-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Books Management</h1>
+                        <p class="page-subtitle">Manage your library's book collection</p>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3 class="table-title">Book Catalog</h3>
+                            <div class="table-actions">
+                                <div class="search-container">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" class="search-input" id="book-search" placeholder="Search books...">
+                                </div>
+                                <button class="btn btn-primary" id="add-book-btn">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Book</span>
+                                </button>
+                            </div>
+                        </div>
+                        <table class="table" id="books-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Category</th>
+                                    <th>ISBN</th>
+                                    <th>Publisher</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Book rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        <div class="pagination" id="books-pagination">
+                            <!-- Pagination will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Members Section -->
+                <section id="members-section" class="content-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Members Management</h1>
+                        <p class="page-subtitle">Manage your library's members</p>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h3 class="table-title">Member Directory</h3>
+                            <div class="table-actions">
+                                <div class="search-container">
+                                    <i class="fas fa-search search-icon"></i>
+                                    <input type="text" class="search-input" id="member-search" placeholder="Search members...">
+                                </div>
+                                <button class="btn btn-primary" id="add-member-btn">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Member</span>
+                                </button>
+                            </div>
+                        </div>
+                        <table class="table" id="members-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Membership Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Member rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                        <div class="pagination" id="members-pagination">
+                            <!-- Pagination will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Circulation Section -->
+                <section id="circulation-section" class="content-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Circulation Management</h1>
+                        <p class="page-subtitle">Manage book borrowing and returns</p>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab-list">
+                            <div class="tab-item active" data-tab="borrowed">Currently Borrowed</div>
+                            <div class="tab-item" data-tab="overdue">Overdue Books</div>
+                            <div class="tab-item" data-tab="history">Circulation History</div>
+                        </div>
+
+                        <!-- Borrowed Books Tab -->
+                        <div class="tab-content active" id="borrowed-tab">
+                            <div class="table-container">
+                                <div class="table-header">
+                                    <h3 class="table-title">Currently Borrowed Books</h3>
+                                    <div class="table-actions">
+                                        <div class="search-container">
+                                            <i class="fas fa-search search-icon"></i>
+                                            <input type="text" class="search-input" id="borrowed-search" placeholder="Search borrowed books...">
+                                        </div>
+                                        <button class="btn btn-primary" id="issue-book-btn">
+                                            <i class="fas fa-exchange-alt"></i>
+                                            <span>Issue Book</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <table class="table" id="borrowed-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Book Title</th>
+                                            <th>Member</th>
+                                            <th>Issue Date</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Borrowed books will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Overdue Books Tab -->
+                        <div class="tab-content" id="overdue-tab">
+                            <div class="table-container">
+                                <div class="table-header">
+                                    <h3 class="table-title">Overdue Books</h3>
+                                    <div class="table-actions">
+                                        <div class="search-container">
+                                            <i class="fas fa-search search-icon"></i>
+                                            <input type="text" class="search-input" id="overdue-search" placeholder="Search overdue books...">
+                                        </div>
+                                        <button class="btn btn-warning" id="send-reminders-btn">
+                                            <i class="fas fa-bell"></i>
+                                            <span>Send Reminders</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <table class="table" id="overdue-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Book Title</th>
+                                            <th>Member</th>
+                                            <th>Issue Date</th>
+                                            <th>Due Date</th>
+                                            <th>Days Overdue</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Overdue books will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Circulation History Tab -->
+                        <div class="tab-content" id="history-tab">
+                            <div class="table-container">
+                                <div class="table-header">
+                                    <h3 class="table-title">Circulation History</h3>
+                                    <div class="table-actions">
+                                        <div class="search-container">
+                                            <i class="fas fa-search search-icon"></i>
+                                            <input type="text" class="search-input" id="history-search" placeholder="Search circulation history...">
+                                        </div>
+                                    </div>
+                                </div>
+                                <table class="table" id="history-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Book Title</th>
+                                            <th>Member</th>
+                                            <th>Issue Date</th>
+                                            <th>Due Date</th>
+                                            <th>Return Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Circulation history will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reports Section -->
+                <section id="reports-section" class="content-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Reports</h1>
+                        <p class="page-subtitle">Generate and view library reports</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3 class="report-title">Books Report</h3>
+                                <div class="report-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            </div>
+                            <p class="report-description">Generate reports on book inventory, popular books, and acquisition statistics.</p>
+                            <button class="btn btn-primary" id="generate-books-report-btn">Generate Report</button>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3 class="report-title">Members Report</h3>
+                                <div class="report-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <p class="report-description">Generate reports on member statistics, active members, and new registrations.</p>
+                            <button class="btn btn-primary" id="generate-members-report-btn">Generate Report</button>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3 class="report-title">Circulation Report</h3>
+                                <div class="report-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                            </div>
+                            <p class="report-description">Generate reports on book circulation, borrowing patterns, and return statistics.</p>
+                            <button class="btn btn-primary" id="generate-circulation-report-btn">Generate Report</button>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="report-header">
+                                <h3 class="report-title">Overdue Report</h3>
+                                <div class="report-icon">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                            </div>
+                            <p class="report-description">Generate reports on overdue books, fine collections, and reminder statistics.</p>
+                            <button class="btn btn-primary" id="generate-overdue-report-btn">Generate Report</button>
+                        </div>
+                    </div>
+
+                    <!-- Report Results -->
+                    <div id="report-results" style="display: none; margin-top: 2rem;">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3 class="table-title" id="report-title">Report Results</h3>
+                                <div class="table-actions">
+                                    <button class="btn btn-outline" id="print-report-btn">
+                                        <i class="fas fa-print"></i>
+                                        <span>Print</span>
+                                    </button>
+                                    <button class="btn btn-outline" id="export-report-btn">
+                                        <i class="fas fa-file-export"></i>
+                                        <span>Export</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="report-content"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings-section" class="content-section">
+                    <div class="page-header">
+                        <h1 class="page-title">Settings</h1>
+                        <p class="page-subtitle">Configure your library management system</p>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3 class="settings-title">General Settings</h3>
+                        </div>
+                        <form id="general-settings-form" class="settings-form">
+                            <div class="form-group">
+                                <label for="library-name" class="form-label">Library Name</label>
+                                <input type="text" id="library-name" class="form-control" value="ABS Library">
+                            </div>
+                            <div class="form-group">
+                                <label for="library-email" class="form-label">Email Address</label>
+                                <input type="email" id="library-email" class="form-control" value="contact@abslibrary.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="library-phone" class="form-label">Phone Number</label>
+                                <input type="tel" id="library-phone" class="form-control" value="+94 746327684">
+                            </div>
+                            <div class="form-group">
+                                <label for="library-address" class="form-label">Address</label>
+                                <textarea id="library-address" class="form-control" rows="3">Pahalagama, Ekiriya</textarea>
+                            </div>
+                        </form>
+                        <button class="btn btn-primary" id="save-general-settings-btn" style="margin-top: 1rem;">Save Settings</button>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3 class="settings-title">Circulation Settings</h3>
+                        </div>
+                        <form id="circulation-settings-form" class="settings-form">
+                            <div class="form-group">
+                                <label for="loan-period" class="form-label">Default Loan Period (days)</label>
+                                <input type="number" id="loan-period" class="form-control" value="14">
+                            </div>
+                            <div class="form-group">
+                                <label for="max-books" class="form-label">Maximum Books Per Member</label>
+                                <input type="number" id="max-books" class="form-control" value="5">
+                            </div>
+                            <div class="form-group">
+                                <label for="fine-rate" class="form-label">Fine Rate (per day)</label>
+                                <input type="number" id="fine-rate" class="form-control" value="0.50" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="grace-period" class="form-label">Grace Period (days)</label>
+                                <input type="number" id="grace-period" class="form-control" value="2">
+                            </div>
+                        </form>
+                        <button class="btn btn-primary" id="save-circulation-settings-btn" style="margin-top: 1rem;">Save Settings</button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">
+                    &copy; 2023 ABS Library Management System. All rights reserved.
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Book Modal -->
+    <div class="modal-overlay" id="add-book-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Book</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="add-book-form">
+                    <input type="hidden" id="book-id">
+                    <div class="form-group">
+                        <label for="book-title" class="form-label">Title</label>
+                        <input type="text" id="book-title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="book-author" class="form-label">Author</label>
+                        <input type="text" id="book-author" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="book-category" class="form-label">Category</label>
+                        <select id="book-category" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Science Fiction">Science Fiction</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Mystery">Mystery</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Biography">Biography</option>
+                            <option value="History">History</option>
+                            <option value="Self-Help">Self-Help</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="book-isbn" class="form-label">ISBN</label>
+                        <input type="text" id="book-isbn" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="book-publisher" class="form-label">Publisher</label>
+                        <input type="text" id="book-publisher" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="book-year" class="form-label">Publication Year</label>
+                        <input type="number" id="book-year" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="book-copies" class="form-label">Number of Copies</label>
+                        <input type="number" id="book-copies" class="form-control" value="1" min="1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-book-btn">Save Book</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div class="modal-overlay" id="add-member-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Member</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="add-member-form">
+                    <input type="hidden" id="member-id">
+                    <div class="form-group">
+                        <label for="member-name" class="form-label">Name</label>
+                        <input type="text" id="member-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="member-email" class="form-label">Email</label>
+                        <input type="email" id="member-email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="member-phone" class="form-label">Phone</label>
+                        <input type="tel" id="member-phone" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="member-address" class="form-label">Address</label>
+                        <textarea id="member-address" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="member-date" class="form-label">Membership Date</label>
+                        <input type="date" id="member-date" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-member-btn">Save Member</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Issue Book Modal -->
+    <div class="modal-overlay" id="issue-book-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Issue Book</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="issue-book-form">
+                    <div class="form-group">
+                        <label for="issue-book" class="form-label">Book</label>
+                        <select id="issue-book" class="form-select" required>
+                            <option value="">Select Book</option>
+                            <!-- Available books will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="issue-member" class="form-label">Member</label>
+                        <select id="issue-member" class="form-select" required>
+                            <option value="">Select Member</option>
+                            <!-- Members will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="issue-date" class="form-label">Issue Date</label>
+                        <input type="date" id="issue-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="due-date" class="form-label">Due Date</label>
+                        <input type="date" id="due-date" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancel</button>
+                <button class="btn btn-primary" id="confirm-issue-btn">Issue Book</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return Book Modal -->
+    <div class="modal-overlay" id="return-book-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Return Book</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="return-book-form">
+                    <input type="hidden" id="return-id">
+                    <div class="form-group">
+                        <label for="return-date" class="form-label">Return Date</label>
+                        <input type="date" id="return-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="book-condition" class="form-label">Book Condition</label>
+                        <select id="book-condition" class="form-select" required>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                            <option value="Poor">Poor</option>
+                            <option value="Damaged">Damaged</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fine-amount" class="form-label">Fine Amount (if applicable)</label>
+                        <input type="number" id="fine-amount" class="form-control" min="0" step="0.01" value="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="return-notes" class="form-label">Notes</label>
+                        <textarea id="return-notes" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline modal-close-btn">Cancel</button>
+                <button class="btn btn-success" id="confirm-return-btn">Confirm Return</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample Data
+        let books = [
+            { id: 1, title: "The Great Gatsby", author: "F. Scott Fitzgerald", category: "Fiction", isbn: "9780743273565", publisher: "Scribner", year: 1925, status: "Available", copies: 3 },
+            
+        ];
+
+        let members = [
+            { id: 1, name: "Sathindu Tharanga", email: "jsathindu@example.com", phone: "0765430878", address: "Pahalagama, Ekiriya", membershipDate: "2023-01-15", status: "Active" },
+           
+        ];
+
+        let circulation = [
+            { id: 1, bookId: 2, bookTitle: "To Kill a Mockingbird", memberId: 1, memberName: "John Smith", issueDate: "2023-05-15", dueDate: "2023-05-29", returnDate: "", status: "Borrowed" },
+            
+        ];
+
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        const contentSections = document.querySelectorAll('.content-section');
+        const tabItems = document.querySelectorAll('.tab-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const modals = document.querySelectorAll('.modal-overlay');
+        const modalCloseBtns = document.querySelectorAll('.modal-close, .modal-close-btn');
+        
+        // Add Book Button
+        const addBookBtn = document.getElementById('add-book-btn');
+        const addBookModal = document.getElementById('add-book-modal');
+        const saveBookBtn = document.getElementById('save-book-btn');
+        
+        // Add Member Button
+        const addMemberBtn = document.getElementById('add-member-btn');
+        const addMemberModal = document.getElementById('add-member-modal');
+        const saveMemberBtn = document.getElementById('save-member-btn');
+        
+        // Issue Book Button
+        const issueBookBtn = document.getElementById('issue-book-btn');
+        const issueBookModal = document.getElementById('issue-book-modal');
+        const confirmIssueBtn = document.getElementById('confirm-issue-btn');
+        
+        // Browse Catalog Button
+        const browseCatalogBtn = document.getElementById('browse-catalog-btn');
+        
+        // Report Buttons
+        const generateBooksReportBtn = document.getElementById('generate-books-report-btn');
+        const generateMembersReportBtn = document.getElementById('generate-members-report-btn');
+        const generateCirculationReportBtn = document.getElementById('generate-circulation-report-btn');
+        const generateOverdueReportBtn = document.getElementById('generate-overdue-report-btn');
+        const printReportBtn = document.getElementById('print-report-btn');
+        const exportReportBtn = document.getElementById('export-report-btn');
+        
+        // Settings Buttons
+        const saveGeneralSettingsBtn = document.getElementById('save-general-settings-btn');
+        const saveCirculationSettingsBtn = document.getElementById('save-circulation-settings-btn');
+        
+        // Mobile Menu Toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+        
+        // Navigation
+        function setActiveSection(sectionId) {
+            // Hide all sections
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the active section
+            document.getElementById(`${sectionId}-section`).classList.add('active');
+            
+            // Update navigation links
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Update sidebar links
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // Close mobile menu
+            sidebar.classList.remove('active');
+        }
+        
+        // Add click event to navigation links
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const sectionId = link.getAttribute('data-section');
+                setActiveSection(sectionId);
+            });
+        });
+        
+        // Add click event to sidebar links
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const sectionId = link.getAttribute('data-section');
+                setActiveSection(sectionId);
+            });
+        });
+        
+        // Browse Catalog Button
+        browseCatalogBtn.addEventListener('click', () => {
+            setActiveSection('books');
+        });
+        
+        // Tab Switching
+        tabItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tabId = item.getAttribute('data-tab');
+                
+                // Remove active class from all tabs
+                tabItems.forEach(tab => tab.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Add active class to current tab
+                item.classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Modal Functions
+        function openModal(modal) {
+            modal.classList.add('active');
+        }
+        
+        function closeAllModals() {
+            modals.forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+        
+        // Open Modals
+        addBookBtn.addEventListener('click', () => {
+            document.getElementById('book-id').value = '';
+            document.getElementById('add-book-form').reset();
+            document.querySelector('#add-book-modal .modal-title').textContent = 'Add New Book';
+            openModal(addBookModal);
+        });
+        
+        addMemberBtn.addEventListener('click', () => {
+            document.getElementById('member-id').value = '';
+            document.getElementById('add-member-form').reset();
+            document.querySelector('#add-member-modal .modal-title').textContent = 'Add New Member';
+            document.getElementById('member-date').value = new Date().toISOString().split('T')[0];
+            openModal(addMemberModal);
+        });
+        
+        issueBookBtn.addEventListener('click', () => {
+            // Populate available books
+            const issueBookSelect = document.getElementById('issue-book');
+            issueBookSelect.innerHTML = '<option value="">Select Book</option>';
+            
+            books.filter(book => book.status === 'Available').forEach(book => {
+                const option = document.createElement('option');
+                option.value = book.id;
+                option.textContent = book.title;
+                issueBookSelect.appendChild(option);
+            });
+            
+            // Populate members
+            const issueMemberSelect = document.getElementById('issue-member');
+            issueMemberSelect.innerHTML = '<option value="">Select Member</option>';
+            
+            members.filter(member => member.status === 'Active').forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = member.name;
+                issueMemberSelect.appendChild(option);
+            });
+            
+            // Set default dates
+            const today = new Date();
+            const dueDate = new Date();
+            dueDate.setDate(today.getDate() + 14); // Default loan period: 14 days
+            
+            document.getElementById('issue-date').value = today.toISOString().split('T')[0];
+            document.getElementById('due-date').value = dueDate.toISOString().split('T')[0];
+            
+            openModal(issueBookModal);
+        });
+        
+        // Close Modals
+        modalCloseBtns.forEach(btn => {
+            btn.addEventListener('click', closeAllModals);
+        });
+        
+        // Close modal when clicking outside
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeAllModals();
+                }
+            });
+        });
+        
+        // Populate Tables
+        function populateBooksTable() {
+            const tbody = document.querySelector('#books-table tbody');
+            tbody.innerHTML = '';
+            
+            books.forEach(book => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${book.id}</td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.category}</td>
+                    <td>${book.isbn}</td>
+                    <td>${book.publisher}</td>
+                    <td><span class="status ${book.status.toLowerCase()}">${book.status}</span></td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button class="btn btn-icon btn-outline edit-book-btn" data-id="${book.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-icon btn-outline delete-book-btn" data-id="${book.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-book-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    editBook(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-book-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    deleteBook(id);
+                });
+            });
+        }
+        
+        function populateMembersTable() {
+            const tbody = document.querySelector('#members-table tbody');
+            tbody.innerHTML = '';
+            
+            members.forEach(member => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${member.id}</td>
+                    <td>${member.name}</td>
+                    <td>${member.email}</td>
+                    <td>${member.phone}</td>
+                    <td>${member.membershipDate}</td>
+                    <td><span class="status available">${member.status}</span></td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button class="btn btn-icon btn-outline edit-member-btn" data-id="${member.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-icon btn-outline delete-member-btn" data-id="${member.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-member-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    editMember(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-member-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    deleteMember(id);
+                });
+            });
+        }
+        
+        function populateCirculationTables() {
+            // Borrowed Books
+            const borrowedTbody = document.querySelector('#borrowed-table tbody');
+            borrowedTbody.innerHTML = '';
+            
+            circulation.filter(item => item.status === 'Borrowed').forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.bookTitle}</td>
+                    <td>${item.memberName}</td>
+                    <td>${item.issueDate}</td>
+                    <td>${item.dueDate}</td>
+                    <td><span class="status borrowed">Borrowed</span></td>
+                    <td>
+                        <button class="btn btn-success return-book-btn" data-id="${item.id}">
+                            <i class="fas fa-undo"></i>
+                            <span>Return</span>
+                        </button>
+                    </td>
+                `;
+                borrowedTbody.appendChild(tr);
+            });
+            
+            // Overdue Books
+            const overdueTbody = document.querySelector('#overdue-table tbody');
+            overdueTbody.innerHTML = '';
+            
+            circulation.filter(item => item.status === 'Overdue').forEach(item => {
+                const dueDate = new Date(item.dueDate);
+                const today = new Date();
+                const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.bookTitle}</td>
+                    <td>${item.memberName}</td>
+                    <td>${item.issueDate}</td>
+                    <td>${item.dueDate}</td>
+                    <td>${daysOverdue}</td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button class="btn btn-success return-book-btn" data-id="${item.id}">
+                                <i class="fas fa-undo"></i>
+                                <span>Return</span>
+                            </button>
+                            <button class="btn btn-warning reminder-btn" data-id="${item.id}">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                overdueTbody.appendChild(tr);
+            });
+            
+            // Circulation History
+            const historyTbody = document.querySelector('#history-table tbody');
+            historyTbody.innerHTML = '';
+            
+            circulation.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.bookTitle}</td>
+                    <td>${item.memberName}</td>
+                    <td>${item.issueDate}</td>
+                    <td>${item.dueDate}</td>
+                    <td>${item.returnDate || '-'}</td>
+                    <td><span class="status ${item.status.toLowerCase()}">${item.status}</span></td>
+                `;
+                historyTbody.appendChild(tr);
+            });
+            
+            // Add event listeners to return buttons
+            document.querySelectorAll('.return-book-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    returnBook(id);
+                });
+            });
+            
+            // Add event listeners to reminder buttons
+            document.querySelectorAll('.reminder-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    sendReminder(id);
+                });
+            });
+        }
+        
+        // CRUD Operations
+        // Books
+        function addBook() {
+            const title = document.getElementById('book-title').value;
+            const author = document.getElementById('book-author').value;
+            const category = document.getElementById('book-category').value;
+            const isbn = document.getElementById('book-isbn').value;
+            const publisher = document.getElementById('book-publisher').value;
+            const year = document.getElementById('book-year').value;
+            const copies = document.getElementById('book-copies').value;
+            
+            const newBook = {
+                id: books.length > 0 ? Math.max(...books.map(book => book.id)) + 1 : 1,
+                title,
+                author,
+                category,
+                isbn,
+                publisher,
+                year,
+                status: 'Available',
+                copies
+            };
+            
+            books.push(newBook);
+            populateBooksTable();
+            closeAllModals();
+            alert('Book added successfully!');
+        }
+        
+        function editBook(id) {
+            const book = books.find(book => book.id == id);
+            if (!book) return;
+            
+            document.getElementById('book-id').value = book.id;
+            document.getElementById('book-title').value = book.title;
+            document.getElementById('book-author').value = book.author;
+            document.getElementById('book-category').value = book.category;
+            document.getElementById('book-isbn').value = book.isbn;
+            document.getElementById('book-publisher').value = book.publisher;
+            document.getElementById('book-year').value = book.year;
+            document.getElementById('book-copies').value = book.copies;
+            
+            document.querySelector('#add-book-modal .modal-title').textContent = 'Edit Book';
+            openModal(addBookModal);
+        }
+        
+        function updateBook() {
+            const id = document.getElementById('book-id').value;
+            const title = document.getElementById('book-title').value;
+            const author = document.getElementById('book-author').value;
+            const category = document.getElementById('book-category').value;
+            const isbn = document.getElementById('book-isbn').value;
+            const publisher = document.getElementById('book-publisher').value;
+            const year = document.getElementById('book-year').value;
+            const copies = document.getElementById('book-copies').value;
+            
+            const index = books.findIndex(book => book.id == id);
+            if (index !== -1) {
+                books[index] = {
+                    ...books[index],
+                    title,
+                    author,
+                    category,
+                    isbn,
+                    publisher,
+                    year,
+                    copies
+                };
+                
+                populateBooksTable();
+                closeAllModals();
+                alert('Book updated successfully!');
+            }
+        }
+        
+        function deleteBook(id) {
+            if (confirm('Are you sure you want to delete this book?')) {
+                const index = books.findIndex(book => book.id == id);
+                if (index !== -1) {
+                    // Check if book is currently borrowed
+                    const isBorrowed = circulation.some(item => 
+                        item.bookId == id && (item.status === 'Borrowed' || item.status === 'Overdue')
+                    );
+                    
+                    if (isBorrowed) {
+                        alert('Cannot delete book. It is currently borrowed.');
+                        return;
+                    }
+                    
+                    books.splice(index, 1);
+                    populateBooksTable();
+                    alert('Book deleted successfully!');
+                }
+            }
+        }
+        
+        // Members
+        function addMember() {
+            const name = document.getElementById('member-name').value;
+            const email = document.getElementById('member-email').value;
+            const phone = document.getElementById('member-phone').value;
+            const address = document.getElementById('member-address').value;
+            const membershipDate = document.getElementById('member-date').value;
+            
+            const newMember = {
+                id: members.length > 0 ? Math.max(...members.map(member => member.id)) + 1 : 1,
+                name,
+                email,
+                phone,
+                address,
+                membershipDate,
+                status: 'Active'
+            };
+            
+            members.push(newMember);
+            populateMembersTable();
+            closeAllModals();
+            alert('Member added successfully!');
+        }
+        
+        function editMember(id) {
+            const member = members.find(member => member.id == id);
+            if (!member) return;
+            
+            document.getElementById('member-id').value = member.id;
+            document.getElementById('member-name').value = member.name;
+            document.getElementById('member-email').value = member.email;
+            document.getElementById('member-phone').value = member.phone;
+            document.getElementById('member-address').value = member.address;
+            document.getElementById('member-date').value = member.membershipDate;
+            
+            document.querySelector('#add-member-modal .modal-title').textContent = 'Edit Member';
+            openModal(addMemberModal);
+        }
+        
+        function updateMember() {
+            const id = document.getElementById('member-id').value;
+            const name = document.getElementById('member-name').value;
+            const email = document.getElementById('member-email').value;
+            const phone = document.getElementById('member-phone').value;
+            const address = document.getElementById('member-address').value;
+            const membershipDate = document.getElementById('member-date').value;
+            
+            const index = members.findIndex(member => member.id == id);
+            if (index !== -1) {
+                members[index] = {
+                    ...members[index],
+                    name,
+                    email,
+                    phone,
+                    address,
+                    membershipDate
+                };
+                
+                populateMembersTable();
+                closeAllModals();
+                alert('Member updated successfully!');
+            }
+        }
+        
+        function deleteMember(id) {
+            if (confirm('Are you sure you want to delete this member?')) {
+                const index = members.findIndex(member => member.id == id);
+                if (index !== -1) {
+                    // Check if member has borrowed books
+                    const hasBorrowedBooks = circulation.some(item => 
+                        item.memberId == id && (item.status === 'Borrowed' || item.status === 'Overdue')
+                    );
+                    
+                    if (hasBorrowedBooks) {
+                        alert('Cannot delete member. They have books checked out.');
+                        return;
+                    }
+                    
+                    members.splice(index, 1);
+                    populateMembersTable();
+                    alert('Member deleted successfully!');
+                }
+            }
+        }
+        
+        // Circulation
+        function issueBook() {
+            const bookId = document.getElementById('issue-book').value;
+            const memberId = document.getElementById('issue-member').value;
+            const issueDate = document.getElementById('issue-date').value;
+            const dueDate = document.getElementById('due-date').value;
+            
+            if (!bookId || !memberId) {
+                alert('Please select both a book and a member.');
+                return;
+            }
+            
+            const book = books.find(book => book.id == bookId);
+            const member = members.find(member => member.id == memberId);
+            
+            if (!book || !member) {
+                alert('Invalid book or member selection.');
+                return;
+            }
+            
+            // Check if member has reached maximum books limit
+            const borrowedCount = circulation.filter(item => 
+                item.memberId == memberId && 
+                (item.status === 'Borrowed' || item.status === 'Overdue')
+            ).length;
+            
+            const maxBooks = parseInt(document.getElementById('max-books').value) || 5;
+            
+            if (borrowedCount >= maxBooks) {
+                alert(`Member has reached the maximum limit of ${maxBooks} books.`);
+                return;
+            }
+            
+            const newCirculation = {
+                id: circulation.length > 0 ? Math.max(...circulation.map(item => item.id)) + 1 : 1,
+                bookId: parseInt(bookId),
+                bookTitle: book.title,
+                memberId: parseInt(memberId),
+                memberName: member.name,
+                issueDate,
+                dueDate,
+                returnDate: '',
+                status: 'Borrowed'
+            };
+            
+            circulation.push(newCirculation);
+            
+            // Update book status
+            const bookIndex = books.findIndex(b => b.id == bookId);
+            if (bookIndex !== -1) {
+                books[bookIndex].status = 'Borrowed';
+            }
+            
+            populateCirculationTables();
+            populateBooksTable();
+            closeAllModals();
+            alert('Book issued successfully!');
+        }
+        
+        function returnBook(id) {
+            const circulationItem = circulation.find(item => item.id == id);
+            if (!circulationItem) return;
+            
+            document.getElementById('return-id').value = id;
+            document.getElementById('return-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('fine-amount').value = '0.00';
+            
+            // Calculate fine if overdue
+            if (circulationItem.status === 'Overdue') {
+                const dueDate = new Date(circulationItem.dueDate);
+                const today = new Date();
+                const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                
+                const fineRate = parseFloat(document.getElementById('fine-rate').value) || 0.50;
+                const gracePeriod = parseInt(document.getElementById('grace-period').value) || 2;
+                
+                if (daysOverdue > gracePeriod) {
+                    const fine = (daysOverdue - gracePeriod) * fineRate;
+                    document.getElementById('fine-amount').value = fine.toFixed(2);
+                }
+            }
+            
+            openModal(document.getElementById('return-book-modal'));
+        }
+        
+        function confirmReturn() {
+            const id = document.getElementById('return-id').value;
+            const returnDate = document.getElementById('return-date').value;
+            const condition = document.getElementById('book-condition').value;
+            const fineAmount = document.getElementById('fine-amount').value;
+            const notes = document.getElementById('return-notes').value;
+            
+            const index = circulation.findIndex(item => item.id == id);
+            if (index !== -1) {
+                const bookId = circulation[index].bookId;
+                
+                // Update circulation record
+                circulation[index].returnDate = returnDate;
+                circulation[index].status = 'Returned';
+                
+                // Update book status
+                const bookIndex = books.findIndex(book => book.id == bookId);
+                if (bookIndex !== -1) {
+                    books[bookIndex].status = 'Available';
+                }
+                
+                populateCirculationTables();
+                populateBooksTable();
+                closeAllModals();
+                
+                if (parseFloat(fineAmount) > 0) {
+                    alert(`Book returned successfully! Fine collected: $${fineAmount}`);
+                } else {
+                    alert('Book returned successfully!');
+                }
+            }
+        }
+        
+        function sendReminder(id) {
+            const circulationItem = circulation.find(item => item.id == id);
+            if (!circulationItem) return;
+            
+            const member = members.find(member => member.id === circulationItem.memberId);
+            
+            alert(`Reminder sent to ${member.name} (${member.email}) for overdue book: ${circulationItem.bookTitle}`);
+        }
+        
+        // Reports
+        function generateBooksReport() {
+            document.getElementById('report-title').textContent = 'Books Report';
+            
+            const reportContent = document.getElementById('report-content');
+            reportContent.innerHTML = '';
+            
+            // Summary statistics
+            const totalBooks = books.length;
+            const availableBooks = books.filter(book => book.status === 'Available').length;
+            const borrowedBooks = books.filter(book => book.status === 'Borrowed').length;
+            const totalCopies = books.reduce((sum, book) => sum + parseInt(book.copies), 0);
+            
+            // Categories breakdown
+            const categories = {};
+            books.forEach(book => {
+                if (!categories[book.category]) {
+                    categories[book.category] = 0;
+                }
+                categories[book.category]++;
+            });
+            
+            // Create report HTML
+            const reportHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">Summary Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${totalBooks}</div>
+                            <div class="stat-description">Total Books</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${availableBooks}</div>
+                            <div class="stat-description">Available Books</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${borrowedBooks}</div>
+                            <div class="stat-description">Borrowed Books</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${totalCopies}</div>
+                            <div class="stat-description">Total Copies</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">Categories Breakdown</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Number of Books</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.entries(categories).map(([category, count]) => `
+                                <tr>
+                                    <td>${category}</td>
+                                    <td>${count}</td>
+                                    <td>${((count / totalBooks) * 100).toFixed(2)}%</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Book Inventory</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Copies</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${books.map(book => `
+                                <tr>
+                                    <td>${book.id}</td>
+                                    <td>${book.title}</td>
+                                    <td>${book.author}</td>
+                                    <td>${book.category}</td>
+                                    <td><span class="status ${book.status.toLowerCase()}">${book.status}</span></td>
+                                    <td>${book.copies}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            reportContent.innerHTML = reportHTML;
+            document.getElementById('report-results').style.display = 'block';
+        }
+        
+        function generateMembersReport() {
+            document.getElementById('report-title').textContent = 'Members Report';
+            
+            const reportContent = document.getElementById('report-content');
+            reportContent.innerHTML = '';
+            
+            // Summary statistics
+            const totalMembers = members.length;
+            const activeMembers = members.filter(member => member.status === 'Active').length;
+            
+            // Members with borrowed books
+            const membersWithBooks = new Set();
+            circulation.forEach(item => {
+                if (item.status === 'Borrowed' || item.status === 'Overdue') {
+                    membersWithBooks.add(item.memberId);
+                }
+            });
+            
+            // Create report HTML
+            const reportHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">Summary Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${totalMembers}</div>
+                            <div class="stat-description">Total Members</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${activeMembers}</div>
+                            <div class="stat-description">Active Members</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${membersWithBooks.size}</div>
+                            <div class="stat-description">Members with Borrowed Books</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Member Directory</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Membership Date</th>
+                                <th>Books Borrowed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${members.map(member => {
+                                const borrowedCount = circulation.filter(item => 
+                                    item.memberId === member.id && 
+                                    (item.status === 'Borrowed' || item.status === 'Overdue')
+                                ).length;
+                                
+                                return `
+                                    <tr>
+                                        <td>${member.id}</td>
+                                        <td>${member.name}</td>
+                                        <td>${member.email}</td>
+                                        <td>${member.phone}</td>
+                                        <td>${member.membershipDate}</td>
+                                        <td>${borrowedCount}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            reportContent.innerHTML = reportHTML;
+            document.getElementById('report-results').style.display = 'block';
+        }
+        
+        function generateCirculationReport() {
+            document.getElementById('report-title').textContent = 'Circulation Report';
+            
+            const reportContent = document.getElementById('report-content');
+            reportContent.innerHTML = '';
+            
+            // Summary statistics
+            const totalCirculations = circulation.length;
+            const currentlyBorrowed = circulation.filter(item => item.status === 'Borrowed').length;
+            const overdue = circulation.filter(item => item.status === 'Overdue').length;
+            const returned = circulation.filter(item => item.status === 'Returned').length;
+            
+            // Create report HTML
+            const reportHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">Summary Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${totalCirculations}</div>
+                            <div class="stat-description">Total Circulations</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${currentlyBorrowed}</div>
+                            <div class="stat-description">Currently Borrowed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${overdue}</div>
+                            <div class="stat-description">Overdue</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${returned}</div>
+                            <div class="stat-description">Returned</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Circulation History</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Book Title</th>
+                                <th>Member</th>
+                                <th>Issue Date</th>
+                                <th>Due Date</th>
+                                <th>Return Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${circulation.map(item => `
+                                <tr>
+                                    <td>${item.id}</td>
+                                    <td>${item.bookTitle}</td>
+                                    <td>${item.memberName}</td>
+                                    <td>${item.issueDate}</td>
+                                    <td>${item.dueDate}</td>
+                                    <td>${item.returnDate || '-'}</td>
+                                    <td><span class="status ${item.status.toLowerCase()}">${item.status}</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            reportContent.innerHTML = reportHTML;
+            document.getElementById('report-results').style.display = 'block';
+        }
+        
+        function generateOverdueReport() {
+            document.getElementById('report-title').textContent = 'Overdue Books Report';
+            
+            const reportContent = document.getElementById('report-content');
+            reportContent.innerHTML = '';
+            
+            // Get overdue items
+            const overdueItems = circulation.filter(item => item.status === 'Overdue');
+            
+            // Calculate fines
+            const fineRate = parseFloat(document.getElementById('fine-rate').value) || 0.50;
+            const gracePeriod = parseInt(document.getElementById('grace-period').value) || 2;
+            
+            let totalFines = 0;
+            
+            const overdueWithFines = overdueItems.map(item => {
+                const dueDate = new Date(item.dueDate);
+                const today = new Date();
+                const daysOverdue = Math.floor((today - dueDate) / (1000 * 60 * 60 * 24));
+                
+                let fine = 0;
+                if (daysOverdue > gracePeriod) {
+                    fine = (daysOverdue - gracePeriod) * fineRate;
+                    totalFines += fine;
+                }
+                
+                return {
+                    ...item,
+                    daysOverdue,
+                    fine
+                };
+            });
+            
+            // Create report HTML
+            const reportHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">Summary Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${overdueItems.length}</div>
+                            <div class="stat-description">Total Overdue Books</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">$${totalFines.toFixed(2)}</div>
+                            <div class="stat-description">Total Fines</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Overdue Books</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Book Title</th>
+                                <th>Member</th>
+                                <th>Due Date</th>
+                                <th>Days Overdue</th>
+                                <th>Fine Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${overdueWithFines.map(item => `
+                                <tr>
+                                    <td>${item.id}</td>
+                                    <td>${item.bookTitle}</td>
+                                    <td>${item.memberName}</td>
+                                    <td>${item.dueDate}</td>
+                                    <td>${item.daysOverdue}</td>
+                                    <td>$${item.fine.toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            reportContent.innerHTML = reportHTML;
+            document.getElementById('report-results').style.display = 'block';
+        }
+        
+        // Print and Export Reports
+        function printReport() {
+            window.print();
+        }
+        
+        function exportReport() {
+            const reportTitle = document.getElementById('report-title').textContent;
+            const reportContent = document.getElementById('report-content').innerHTML;
+            
+            // Create a blob with the report content
+            const blob = new Blob([`
+                <html>
+                <head>
+                    <title>${reportTitle}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        table { border-collapse: collapse; width: 100%; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${reportTitle}</h1>
+                    ${reportContent}
+                </body>
+                </html>
+            `], { type: 'text/html' });
+            
+            // Create a download link
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${reportTitle.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Settings
+        function saveGeneralSettings() {
+            alert('General settings saved successfully!');
+        }
+        
+        function saveCirculationSettings() {
+            alert('Circulation settings saved successfully!');
+        }
+        
+        // Event Listeners
+        // Book Form
+        saveBookBtn.addEventListener('click', () => {
+            const form = document.getElementById('add-book-form');
+            if (form.checkValidity()) {
+                const bookId = document.getElementById('book-id').value;
+                if (bookId) {
+                    updateBook();
+                } else {
+                    addBook();
+                }
+            } else {
+                form.reportValidity();
+            }
+        });
+        
+        // Member Form
+        saveMemberBtn.addEventListener('click', () => {
+            const form = document.getElementById('add-member-form');
+            if (form.checkValidity()) {
+                const memberId = document.getElementById('member-id').value;
+                if (memberId) {
+                    updateMember();
+                } else {
+                    addMember();
+                }
+            } else {
+                form.reportValidity();
+            }
+        });
+        
+        // Issue Book Form
+        confirmIssueBtn.addEventListener('click', () => {
+            const form = document.getElementById('issue-book-form');
+            if (form.checkValidity()) {
+                issueBook();
+            } else {
+                form.reportValidity();
+            }
+        });
+        
+        // Return Book Form
+        document.getElementById('confirm-return-btn').addEventListener('click', () => {
+            const form = document.getElementById('return-book-form');
+            if (form.checkValidity()) {
+                confirmReturn();
+            } else {
+                form.reportValidity();
+            }
+        });
+        
+        // Report Buttons
+        generateBooksReportBtn.addEventListener('click', generateBooksReport);
+        generateMembersReportBtn.addEventListener('click', generateMembersReport);
+        generateCirculationReportBtn.addEventListener('click', generateCirculationReport);
+        generateOverdueReportBtn.addEventListener('click', generateOverdueReport);
+        printReportBtn.addEventListener('click', printReport);
+        exportReportBtn.addEventListener('click', exportReport);
+        
+        // Settings Buttons
+        saveGeneralSettingsBtn.addEventListener('click', saveGeneralSettings);
+        saveCirculationSettingsBtn.addEventListener('click', saveCirculationSettings);
+        
+        // Initialize Tables
+        populateBooksTable();
+        populateMembersTable();
+        populateCirculationTables();
+        
+        // Set current date as default for date inputs
+        document.getElementById('issue-date').value = new Date().toISOString().split('T')[0];
+        
+        // Set default due date (14 days from today)
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 14);
+        document.getElementById('due-date').value = dueDate.toISOString().split('T')[0];
+    </script>
+</body>
+</html>
